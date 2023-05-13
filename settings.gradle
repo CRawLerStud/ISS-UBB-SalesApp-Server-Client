@@ -1,0 +1,8 @@
+rootProject.name = 'Aplicatie'
+include 'Model'
+include 'Persistance'
+include 'Services'
+include 'Server'
+include 'Networking'
+include 'ClientFX'
+
