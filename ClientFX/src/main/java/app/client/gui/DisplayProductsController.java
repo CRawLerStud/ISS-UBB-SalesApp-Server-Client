@@ -63,7 +63,7 @@ public class DisplayProductsController extends Controller implements Initializab
 
     @FXML
     public void logoutAction(){
-
+        //TODO: IMPLEMENT LOGOUT ACTION
     }
     @FXML
     public void addProductToOrderAction(){

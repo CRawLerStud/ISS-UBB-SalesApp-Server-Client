@@ -29,7 +29,7 @@ public class BackofficeController extends Controller implements Initializable {
 
     @FXML
     public void logoutAction(){
-
+        //TODO: IMPLEMENT LOGOUT ACTION
     }
 
     @FXML
@@ -46,7 +46,7 @@ public class BackofficeController extends Controller implements Initializable {
     }
     @FXML
     public void createOrderViewAction(){
-
+        //TODO: IMPLEMENT LOGIC FOR SWITCHING SCENE TO DIPLAY ORDER AND ALLOW ADMIN TO CREATE NEW ORDERS
     }
 
     @Override
