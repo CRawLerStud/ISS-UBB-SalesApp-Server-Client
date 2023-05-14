@@ -2,6 +2,7 @@ package app.networking.rpcprotocol.request;
 
 public enum RequestType {
     LOGIN,
+    LOGOUT,
     CHANGE_OBSERVER,
     GET_PRODUCTS,
     ADD_ORDER,

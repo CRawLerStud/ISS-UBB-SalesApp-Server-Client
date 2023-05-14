@@ -6,6 +6,7 @@ import app.services.AppException;
 import app.services.AppObserver;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 
 import java.net.URL;
@@ -29,7 +30,15 @@ public class BackofficeController extends Controller implements Initializable {
 
     @FXML
     public void logoutAction(){
-        //TODO: IMPLEMENT LOGOUT ACTION
+        try{
+            services.logout(employee, null);
+            stage.close();
+        }
+        catch(AppException ex){
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
+            alert.showAndWait();
+            System.out.println("Logout error " + ex.getMessage());
+        }
     }
 
     @FXML

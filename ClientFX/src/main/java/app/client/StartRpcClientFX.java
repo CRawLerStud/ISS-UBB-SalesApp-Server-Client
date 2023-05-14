@@ -50,6 +50,10 @@ public class StartRpcClientFX extends Application {
         LoginController loginController = loader.getController();
         loginController.set(server, primaryStage);
 
+        primaryStage.setOnCloseRequest(event -> {
+            primaryStage.close();
+        });
+
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }

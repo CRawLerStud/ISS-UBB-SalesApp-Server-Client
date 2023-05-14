@@ -63,7 +63,15 @@ public class DisplayProductsController extends Controller implements Initializab
 
     @FXML
     public void logoutAction(){
-        //TODO: IMPLEMENT LOGOUT ACTION
+        try{
+            services.logout(employee, null);
+            stage.close();
+        }
+        catch(AppException ex){
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
+            alert.showAndWait();
+            System.out.println("Error while logout!");
+        }
     }
     @FXML
     public void addProductToOrderAction(){

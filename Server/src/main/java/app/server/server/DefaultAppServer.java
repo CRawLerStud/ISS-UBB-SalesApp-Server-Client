@@ -55,6 +55,15 @@ public class DefaultAppServer implements AppServices {
     }
 
     @Override
+    public synchronized void logout(Employee employee, AppObserver clientObserver) throws AppException {
+        if(!loggedClients.containsKey(employee.getId())){
+            throw new AppException("Employee is not logged in!");
+        }
+        loggedClients.remove(employee.getId());
+        System.out.println("Local Client logged out!");
+    }
+
+    @Override
     public void addOrder(Order entity) throws AppException {
         try{
             for(OrderEntry entry : entity.getOrderEntries()){

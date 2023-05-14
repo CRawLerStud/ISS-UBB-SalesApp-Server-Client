@@ -124,6 +124,20 @@ public class AppClientRpcReflectionWorker implements Runnable, AppObserver {
         }
     }
 
+    private Response handleLOGOUT(Request request){
+        System.out.println("Logout Request -> " + request);
+        EmployeeDto employeeDto = (EmployeeDto) request.data();
+        Employee employee = DtoUtils.getFromDto(employeeDto);
+        try{
+            server.logout(employee, this);
+            connected = false;
+            return okResponse;
+        }
+        catch(AppException ex){
+            return new Response.Builder().type(ResponseType.ERROR).data(ex.getMessage()).build();
+        }
+    }
+
     private Response handleCHANGE_OBSERVER(Request request){
         System.out.println("Change Observer request -> " + request);
         EmployeeDto employeeDto = (EmployeeDto) request.data();

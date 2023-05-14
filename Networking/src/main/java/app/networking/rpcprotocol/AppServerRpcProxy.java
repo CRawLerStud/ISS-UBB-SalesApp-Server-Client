@@ -61,6 +61,33 @@ public class AppServerRpcProxy implements AppServices {
     }
 
     @Override
+    public void logout(Employee employee, AppObserver clientObserver) throws AppException {
+        EmployeeDto employeeDto = DtoUtils.getDto(employee);
+        Request request = new Request.Builder().type(RequestType.LOGOUT).data(employeeDto).build();
+        sendRequest(request);
+        Response response = readResponse();
+        if(response.type() == ResponseType.ERROR){
+            String err = response.data().toString();
+            throw new AppException(err);
+        }
+        closeConnection();
+    }
+
+    private void closeConnection() {
+        finished = true;
+        try{
+            input.close();
+            output.close();
+            connection.close();
+            client = null;
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+            System.out.println("Error while closing the connection![SERVER PROXY]");
+        }
+    }
+
+    @Override
     public void addOrder(Order entity) throws AppException {
         OrderDto orderDto = DtoUtils.getDto(entity);
         Request request = new Request.Builder().type(RequestType.ADD_ORDER).data(orderDto).build();

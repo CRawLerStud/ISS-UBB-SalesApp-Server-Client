@@ -11,6 +11,8 @@ public interface AppServices {
 
     Employee login(String username, String password, AppObserver clientObserver) throws AppException;
 
+    void logout(Employee employee, AppObserver clientObserver) throws AppException;
+
     void changeObserverForClient(Employee employee, AppObserver newClientObserver) throws AppException;
 
     List<Product> getAllProducts() throws AppException;
