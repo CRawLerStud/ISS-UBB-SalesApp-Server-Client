@@ -80,7 +80,7 @@ public class DefaultAppServer implements AppServices {
 
             for(OrderEntry entry : entity.getOrderEntries()){
                 Integer newQuantity = entry.getProduct().getStock() - entry.getQuantity();
-                productRepository.sellQuantity(entry.getProduct().getId(), newQuantity);
+                productRepository.setNewQuantity(entry.getProduct().getId(), newQuantity);
             }
 
             notifyAddedOrder(entity);
@@ -121,6 +121,94 @@ public class DefaultAppServer implements AppServices {
         }
     }
 
+    private void notifyAddedProduct(Product product){
+        ExecutorService executor = Executors.newFixedThreadPool(defaultThradsNo);
+        for(AppObserver observer : loggedClients.values()){
+            if(observer != null){
+                executor.execute(() -> {
+                    try{
+                        System.out.println("Invoking method productUpdate for observer! " + observer);
+                        observer.addProductUpdate(product);
+                    }
+                    catch(AppException ex){
+                        System.err.println("Error notifying employee: " + ex.getMessage());
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void addProduct(Product product) throws AppException {
+        try{
+            productRepository.save(product);
+
+            notifyAddedProduct(product);
+        }
+        catch(RepositoryException ex){
+            throw new AppException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public void updateProduct(Product newProduct) throws AppException {
+        try{
+            productRepository.update(newProduct);
+
+            notifyUpdatedProduct(newProduct);
+        }
+        catch(RepositoryException ex){
+            throw new AppException(ex.getMessage());
+        }
+    }
+
+    private void notifyUpdatedProduct(Product newProduct) {
+        ExecutorService executor = Executors.newFixedThreadPool(defaultThradsNo);
+        for(AppObserver observer : loggedClients.values()){
+            if(observer != null){
+                executor.execute(() -> {
+                    try{
+                        System.out.println("Invoking method productUpdate for observer! " + observer);
+                        observer.productUpdate(newProduct);
+                    }
+                    catch(AppException ex){
+                        System.err.println("Error notifying employee: " + ex.getMessage());
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void deleteProduct(Product product) throws AppException {
+        try{
+            orderRepository.deleteOrdersThatContainsProduct(product);
+            productRepository.delete(product.getId());
+
+            notifyDeletedProduct(product);
+        }
+        catch(RepositoryException ex){
+            throw new AppException(ex.getMessage());
+        }
+    }
+
+    private void notifyDeletedProduct(Product product) {
+        ExecutorService executor = Executors.newFixedThreadPool(defaultThradsNo);
+        for(AppObserver observer : loggedClients.values()){
+            if(observer != null){
+                executor.execute(() -> {
+                    try{
+                        System.out.println("Invoking method productUpdate for observer! " + observer);
+                        observer.deleteProductUpdate(product);
+                    }
+                    catch(AppException ex){
+                        System.err.println("Error notifying employee: " + ex.getMessage());
+                    }
+                });
+            }
+        }
+    }
+
     @Override
     public void changeObserverForClient(Employee employee, AppObserver newClientObserver) throws AppException {
         if(loggedClients.containsKey(employee.getId())){
@@ -135,5 +223,15 @@ public class DefaultAppServer implements AppServices {
         return StreamSupport
                 .stream(productRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isProductPresentInAnyOrder(Product product) throws AppException {
+        try {
+            return orderRepository.isProductPresentInAnyOrder(product);
+        }
+        catch(RepositoryException ex){
+            throw new AppException(ex.getMessage());
+        }
     }
 }

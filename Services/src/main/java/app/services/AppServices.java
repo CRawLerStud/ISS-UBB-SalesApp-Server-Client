@@ -16,9 +16,14 @@ public interface AppServices {
     void changeObserverForClient(Employee employee, AppObserver newClientObserver) throws AppException;
 
     List<Product> getAllProducts() throws AppException;
+    void addProduct(Product product) throws AppException;
+    void updateProduct(Product newProduct) throws AppException;
+    void deleteProduct(Product product) throws AppException;
 
     void addOrder(Order entity) throws AppException;
 
     Client addClient(Client entity) throws AppException;
+
+    boolean isProductPresentInAnyOrder(Product product) throws AppException;
 
 }

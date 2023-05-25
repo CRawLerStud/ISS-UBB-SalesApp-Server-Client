@@ -143,7 +143,7 @@ public class DefaultProductRepository implements ProductRepository {
     }
 
     @Override
-    public void sellQuantity(Long productId, Integer newQuantity) {
+    public void setNewQuantity(Long productId, Integer newQuantity) {
 
         Connection connection = dbUtils.getConnection();
 
@@ -161,6 +161,32 @@ public class DefaultProductRepository implements ProductRepository {
         }
         catch(SQLException ex){
             System.out.println("Error while updating stock for a product : " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public void update(Product newProduct) throws RepositoryException{
+        Connection connection = dbUtils.getConnection();
+
+        try(PreparedStatement statement = connection.prepareStatement(
+                "UPDATE products " +
+                        "SET name = ? ," +
+                        "stock = ?, " +
+                        "price = ? " +
+                        "WHERE id = ?")
+        ){
+            statement.setString(1, newProduct.getName());
+            statement.setInt(2, newProduct.getStock());
+            statement.setDouble(3, newProduct.getPrice());
+            statement.setLong(4, newProduct.getId());
+
+            statement.executeUpdate();
+            System.out.println("Updated product in DB!");
+
+        }
+        catch(SQLException ex){
+            System.out.println("Error while updating a product!");
+            throw new RepositoryException(ex.getMessage());
         }
     }
 }

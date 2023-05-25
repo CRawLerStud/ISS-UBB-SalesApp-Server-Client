@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class DisplayProductsController extends Controller implements Initializable, AppObserver {
 
@@ -101,7 +100,6 @@ public class DisplayProductsController extends Controller implements Initializab
     }
     @FXML
     public void placeOrderAction(){
-        //TODO: DESCHIDE PAGINA PENTRU FORMULARUL CLIENTULUI
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/confirm-order.fxml"));
             Parent root = loader.load();
@@ -140,6 +138,34 @@ public class DisplayProductsController extends Controller implements Initializab
                     }
                 }
             }
+        });
+    }
+
+    @Override
+    public void deleteProductUpdate(Product product) throws AppException {
+        System.out.println("Delete Product Update has been called!");
+        Platform.runLater(() -> {
+            productsObservableList.remove(product);
+        });
+    }
+
+    @Override
+    public void productUpdate(Product product) throws AppException {
+        System.out.println("Product update has been called!");
+        Platform.runLater(() -> {
+            for(Product observableProduct : productsObservableList.stream().toList()){
+                if(observableProduct.equals(product)){
+                    productsObservableList.set(productsObservableList.indexOf(observableProduct), product);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void addProductUpdate(Product product) throws AppException {
+        System.out.println("Product update has been called!");
+        Platform.runLater(() -> {
+            productsObservableList.add(product);
         });
     }
 

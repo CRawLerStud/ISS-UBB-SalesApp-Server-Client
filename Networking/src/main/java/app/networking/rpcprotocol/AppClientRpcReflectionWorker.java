@@ -3,6 +3,7 @@ package app.networking.rpcprotocol;
 import app.model.Client;
 import app.model.Employee;
 import app.model.Order;
+import app.model.Product;
 import app.networking.dto.*;
 import app.networking.rpcprotocol.request.Request;
 import app.networking.rpcprotocol.response.Response;
@@ -49,6 +50,42 @@ public class AppClientRpcReflectionWorker implements Runnable, AppObserver {
         }
         catch(IOException e){
             throw new AppException("Error sending object: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void addProductUpdate(Product product) throws AppException {
+        System.out.println("Add Product update -> started method");
+        Response response = new Response.Builder().type(ResponseType.PRODUCT_ADDED).data(DtoUtils.getDto(product)).build();
+        try{
+            sendResponse(response);
+        }
+        catch(IOException ex){
+            throw new AppException("Error sending object: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public void productUpdate(Product product) throws AppException {
+        System.out.println("Product update -> started method");
+        Response response = new Response.Builder().type(ResponseType.PRODUCT_UPDATED).data(DtoUtils.getDto(product)).build();
+        try{
+            sendResponse(response);
+        }
+        catch(IOException ex){
+            throw new AppException("Error sending object: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteProductUpdate(Product product) throws AppException {
+        System.out.println("Product delete update -> started method");
+        Response response = new Response.Builder().type(ResponseType.PRODUCT_DELETED).data(DtoUtils.getDto(product)).build();
+        try{
+            sendResponse(response);
+        }
+        catch(IOException ex){
+            throw new AppException("Error sending object: " + ex.getMessage());
         }
     }
 
@@ -165,6 +202,45 @@ public class AppClientRpcReflectionWorker implements Runnable, AppObserver {
         }
     }
 
+    private Response handleADD_PRODUCT(Request request){
+        System.out.println("Add Product Request -> " + request);
+        ProductDto productDto = (ProductDto) request.data();
+        Product product = DtoUtils.getFromDto(productDto);
+        try{
+            server.addProduct(product);
+            return okResponse;
+        }
+        catch(AppException ex){
+            return new Response.Builder().type(ResponseType.ERROR).data(ex.getMessage()).build();
+        }
+    }
+
+    private Response handleUPDATE_PRODUCT(Request request){
+        System.out.println("Update product Request -> " + request);
+        ProductDto productDto = (ProductDto) request.data();
+        Product product = DtoUtils.getFromDto(productDto);
+        try{
+            server.updateProduct(product);
+            return okResponse;
+        }
+        catch(AppException ex){
+            return new Response.Builder().type(ResponseType.ERROR).data(ex.getMessage()).build();
+        }
+    }
+
+    private Response handleDELETE_PRODUCT(Request request){
+        System.out.println("Delete product request -> " + request);
+        ProductDto productDto = (ProductDto) request.data();
+        Product product = DtoUtils.getFromDto(productDto);
+        try{
+            server.deleteProduct(product);
+            return okResponse;
+        }
+        catch(AppException ex){
+            return new Response.Builder().type(ResponseType.ERROR).data(ex.getMessage()).build();
+        }
+    }
+
     private Response handleADD_CLIENT(Request request){
         System.out.println("Add Client Request -> " + request);
         ClientDto clientDto = (ClientDto) request.data();
@@ -188,6 +264,24 @@ public class AppClientRpcReflectionWorker implements Runnable, AppObserver {
         }
         catch(AppException e){
             return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
+        }
+    }
+
+    private Response handleIS_PRODUCT_PRESENT_IN_ORDERS(Request request){
+        System.out.println("Is product present in ORDERS Request -> " + request);
+        try{
+            ProductDto productDto = (ProductDto) request.data();
+            Product product = DtoUtils.getFromDto(productDto);
+            boolean isPresent = server.isProductPresentInAnyOrder(product);
+            if(isPresent){
+                return new Response.Builder().type(ResponseType.OK).data("YES").build();
+            }
+            else{
+                return new Response.Builder().type(ResponseType.OK).data("NO").build();
+            }
+        }
+        catch(AppException ex){
+            return new Response.Builder().type(ResponseType.ERROR).data(ex.getMessage()).build();
         }
     }
 

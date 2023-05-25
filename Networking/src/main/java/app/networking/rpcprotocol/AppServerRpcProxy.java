@@ -47,13 +47,13 @@ public class AppServerRpcProxy implements AppServices {
                 new Request.Builder().type(RequestType.LOGIN).data(credentialsDto).build();
         sendRequest(request);
         Response response = readResponse();
-        if(response.type() == ResponseType.OK){
+        if (response.type() == ResponseType.OK) {
             EmployeeDto employeeDto = (EmployeeDto) response.data();
             Employee employee = DtoUtils.getFromDto(employeeDto);
             this.client = clientObserver;
             return employee;
         }
-        if(response.type() == ResponseType.ERROR){
+        if (response.type() == ResponseType.ERROR) {
             String err = response.data().toString();
             throw new AppException(err);
         }
@@ -66,7 +66,7 @@ public class AppServerRpcProxy implements AppServices {
         Request request = new Request.Builder().type(RequestType.LOGOUT).data(employeeDto).build();
         sendRequest(request);
         Response response = readResponse();
-        if(response.type() == ResponseType.ERROR){
+        if (response.type() == ResponseType.ERROR) {
             String err = response.data().toString();
             throw new AppException(err);
         }
@@ -75,13 +75,12 @@ public class AppServerRpcProxy implements AppServices {
 
     private void closeConnection() {
         finished = true;
-        try{
+        try {
             input.close();
             output.close();
             connection.close();
             client = null;
-        }
-        catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
             System.out.println("Error while closing the connection![SERVER PROXY]");
         }
@@ -93,7 +92,43 @@ public class AppServerRpcProxy implements AppServices {
         Request request = new Request.Builder().type(RequestType.ADD_ORDER).data(orderDto).build();
         sendRequest(request);
         Response response = readResponse();
-        if(response.type() == ResponseType.ERROR){
+        if (response.type() == ResponseType.ERROR) {
+            String err = response.data().toString();
+            throw new AppException(err);
+        }
+    }
+
+    @Override
+    public void addProduct(Product product) throws AppException {
+        ProductDto productDto = DtoUtils.getDto(product);
+        Request request = new Request.Builder().type(RequestType.ADD_PRODUCT).data(productDto).build();
+        sendRequest(request);
+        Response response = readResponse();
+        if (response.type() == ResponseType.ERROR) {
+            String err = response.data().toString();
+            throw new AppException(err);
+        }
+    }
+
+    @Override
+    public void updateProduct(Product newProduct) throws AppException {
+        ProductDto productDto = DtoUtils.getDto(newProduct);
+        Request request = new Request.Builder().type(RequestType.UPDATE_PRODUCT).data(productDto).build();
+        sendRequest(request);
+        Response response = readResponse();
+        if (response.type() == ResponseType.ERROR) {
+            String err = response.data().toString();
+            throw new AppException(err);
+        }
+    }
+
+    @Override
+    public void deleteProduct(Product product) throws AppException {
+        ProductDto productDto = DtoUtils.getDto(product);
+        Request request = new Request.Builder().type(RequestType.DELETE_PRODUCT).data(productDto).build();
+        sendRequest(request);
+        Response response = readResponse();
+        if (response.type() == ResponseType.ERROR) {
             String err = response.data().toString();
             throw new AppException(err);
         }
@@ -105,12 +140,12 @@ public class AppServerRpcProxy implements AppServices {
         Request request = new Request.Builder().type(RequestType.ADD_CLIENT).data(clientDto).build();
         sendRequest(request);
         Response response = readResponse();
-        if(response.type() == ResponseType.OK){
+        if (response.type() == ResponseType.OK) {
             ClientDto clientDto1 = (ClientDto) response.data();
             Client client1 = DtoUtils.getFromDto(clientDto1);
             return client1;
         }
-        if(response.type() == ResponseType.ERROR){
+        if (response.type() == ResponseType.ERROR) {
             String err = response.data().toString();
             throw new AppException(err);
         }
@@ -118,15 +153,14 @@ public class AppServerRpcProxy implements AppServices {
     }
 
     private void initializeConnection() {
-        try{
+        try {
             connection = new Socket(host, port);
             output = new ObjectOutputStream(connection.getOutputStream());
             output.flush();
             input = new ObjectInputStream(connection.getInputStream());
             finished = false;
             startReader();
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -137,11 +171,11 @@ public class AppServerRpcProxy implements AppServices {
         Request request = new Request.Builder().type(RequestType.CHANGE_OBSERVER).data(employeeDto).build();
         sendRequest(request);
         Response response = readResponse();
-        if(response.type() == ResponseType.OK){
+        if (response.type() == ResponseType.OK) {
             this.client = newClientObserver;
             return;
         }
-        if(response.type() == ResponseType.ERROR){
+        if (response.type() == ResponseType.ERROR) {
             String err = response.data().toString();
             throw new AppException(err);
         }
@@ -149,7 +183,7 @@ public class AppServerRpcProxy implements AppServices {
     }
 
     private void startReader() {
-        Thread tw= new Thread(new ReaderThread());
+        Thread tw = new Thread(new ReaderThread());
         tw.start();
     }
 
@@ -159,48 +193,95 @@ public class AppServerRpcProxy implements AppServices {
                 new Request.Builder().type(RequestType.GET_PRODUCTS).data(null).build();
         sendRequest(request);
         Response response = readResponse();
-        if(response.type() == ResponseType.ERROR){
+        if (response.type() == ResponseType.ERROR) {
             String err = response.data().toString();
             throw new AppException(err);
         }
         return Arrays.stream((ProductDto[]) response.data()).map(DtoUtils::getFromDto).toList();
     }
 
+    @Override
+    public boolean isProductPresentInAnyOrder(Product product) throws AppException {
+        Request request =
+                new Request.Builder().type(RequestType.IS_PRODUCT_PRESENT_IN_ORDERS)
+                        .data(DtoUtils.getDto(product)).build();
+        sendRequest(request);
+        Response response = readResponse();
+        if (response.type() == ResponseType.ERROR) {
+            String err = response.data().toString();
+            throw new AppException(err);
+        }
+        String finalResponse = (String) response.data();
+        return finalResponse.equals("YES");
+    }
+
     private Response readResponse() {
         Response response = null;
-        try{
+        try {
             System.out.println("Taking response!");
             response = qresponses.take();
             System.out.println("Response has been taken!");
-        }
-        catch(InterruptedException ex){
+        } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
         return response;
     }
 
-    private void sendRequest(Request request) throws AppException{
-        try{
+    private void sendRequest(Request request) throws AppException {
+        try {
             output.writeObject(request);
             output.flush();
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             throw new AppException("Error sending request : " + request);
         }
     }
 
     private void handleUpdate(Response response) {
-        Order order = DtoUtils.getFromDto((OrderDto) response.data());
-        try{
-            client.orderUpdate(order);
-        }
-        catch(AppException ex){
-            ex.printStackTrace();
+        if (response.type() == ResponseType.ORDERED_ADDED) {
+            Order order = DtoUtils.getFromDto((OrderDto) response.data());
+            try {
+                if (client != null) {
+                    client.orderUpdate(order);
+                }
+            } catch (AppException ex) {
+                ex.printStackTrace();
+            }
+        } else if (response.type() == ResponseType.PRODUCT_ADDED) {
+            Product product = DtoUtils.getFromDto((ProductDto) response.data());
+            try {
+                if (client != null) {
+                    client.addProductUpdate(product);
+                }
+            } catch (AppException ex) {
+                ex.printStackTrace();
+            }
+        } else if (response.type() == ResponseType.PRODUCT_UPDATED) {
+            Product product = DtoUtils.getFromDto((ProductDto) response.data());
+            try {
+                if (client != null) {
+                    client.productUpdate(product);
+                }
+            } catch (AppException ex) {
+                ex.printStackTrace();
+            }
+        } else if (response.type() == ResponseType.PRODUCT_DELETED) {
+            Product product = DtoUtils.getFromDto((ProductDto) response.data());
+            try {
+                if (client != null) {
+                    client.deleteProductUpdate(product);
+                }
+            } catch (AppException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
     private boolean isUpdate(Response response) {
-        return response.type() == ResponseType.ORDERED_ADDED;
+        return
+                response.type() == ResponseType.ORDERED_ADDED ||
+                        response.type() == ResponseType.PRODUCT_ADDED ||
+                        response.type() == ResponseType.PRODUCT_UPDATED ||
+                        response.type() == ResponseType.PRODUCT_DELETED;
     }
 
     private class ReaderThread implements Runnable {

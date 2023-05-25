@@ -33,12 +33,11 @@ public class BackofficeController extends Controller implements Initializable {
     private Label salesmanLabel;
 
     @FXML
-    public void logoutAction(){
-        try{
+    public void logoutAction() {
+        try {
             services.logout(employee, null);
             stage.close();
-        }
-        catch(AppException ex){
+        } catch (AppException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
             alert.showAndWait();
             System.out.println("Logout error " + ex.getMessage());
@@ -46,20 +45,73 @@ public class BackofficeController extends Controller implements Initializable {
     }
 
     @FXML
-    public void addProductViewAction(){
+    public void addProductViewAction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/add-products.fxml"));
+            Parent root = loader.load();
+
+            AddProductController controller = loader.getController();
+            controller.set(services, stage);
+            controller.setEmployee(employee);
+
+            services.changeObserverForClient(employee, null);
+
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException | AppException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
+            alert.showAndWait();
+        }
 
     }
-    @FXML
-    public void deleteProductViewAction(){
 
-    }
     @FXML
-    public void updateProductViewAction(){
+    public void deleteProductViewAction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/delete-products.fxml"));
+            Parent root = loader.load();
 
+            DeleteProductsController controller = loader.getController();
+            controller.set(services, stage);
+            controller.setEmployee(employee);
+
+            services.changeObserverForClient(employee, controller);
+            System.out.println("Observer changed!");
+
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException | AppException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
+            alert.showAndWait();
+            System.out.println(ex.getMessage());
+        }
     }
+
     @FXML
-    public void createOrderViewAction(){
-        try{
+    public void updateProductViewAction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/modify-products.fxml"));
+            Parent root = loader.load();
+
+            ModifyProductController controller = loader.getController();
+            controller.set(services, stage);
+            controller.setEmployee(employee);
+
+            services.changeObserverForClient(employee, controller);
+            System.out.println("Observer changed!");
+
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException | AppException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
+            alert.showAndWait();
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    @FXML
+    public void createOrderViewAction() {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/display-products.fxml"));
             Parent root = loader.load();
 
@@ -71,8 +123,7 @@ public class BackofficeController extends Controller implements Initializable {
 
             stage.setScene(new Scene(root));
             stage.show();
-        }
-        catch(IOException | AppException ex){
+        } catch (IOException | AppException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
             alert.showAndWait();
         }
