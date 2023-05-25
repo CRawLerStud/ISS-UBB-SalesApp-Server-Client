@@ -61,15 +61,25 @@ public class DisplayProductsController extends Controller implements Initializab
     private final ObservableList<OrderEntryForTableView> orderObservableList = FXCollections.observableArrayList();
 
     @FXML
-    public void logoutAction(){
-        try{
+    public void logoutAction() {
+        try {
             services.logout(employee, null);
-            stage.close();
-        }
-        catch(AppException ex){
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+            Parent root = loader.load();
+
+            LoginController controller = loader.getController();
+            controller.set(services, stage);
+
+            Scene newScene = new Scene(root);
+            stage.setScene(newScene);
+
+            stage.setOnCloseRequest(event -> {
+                stage.close();
+            });
+        } catch (AppException | IOException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
             alert.showAndWait();
-            System.out.println("Error while logout!");
+            System.out.println("Logout error " + ex.getMessage());
         }
     }
     @FXML

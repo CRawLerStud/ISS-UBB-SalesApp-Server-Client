@@ -10,7 +10,10 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -56,6 +59,30 @@ public class ModifyProductController extends Controller implements Initializable
 
     private ObservableList<Product> observableList = FXCollections.observableArrayList();
 
+    @FXML
+    public void backAction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/backoffice.fxml"));
+            Parent root = loader.load();
+
+            BackofficeController controller = loader.getController();
+            controller.set(services, stage);
+            controller.setEmployee(employee);
+
+            services.changeObserverForClient(employee, null);
+
+            stage.setScene(new Scene(root));
+
+            stage.setOnCloseRequest(event -> {
+                controller.logoutAction();
+                stage.close();
+            });
+        } catch (AppException | IOException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
+            alert.showAndWait();
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         nameProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -72,11 +99,22 @@ public class ModifyProductController extends Controller implements Initializable
     }
 
     @FXML
-    public void logoutAction(){
+    public void logoutAction() {
         try {
             services.logout(employee, null);
-            stage.close();
-        } catch (AppException ex) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+            Parent root = loader.load();
+
+            LoginController controller = loader.getController();
+            controller.set(services, stage);
+
+            Scene newScene = new Scene(root);
+            stage.setScene(newScene);
+
+            stage.setOnCloseRequest(event -> {
+                stage.close();
+            });
+        } catch (AppException | IOException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
             alert.showAndWait();
             System.out.println("Logout error " + ex.getMessage());

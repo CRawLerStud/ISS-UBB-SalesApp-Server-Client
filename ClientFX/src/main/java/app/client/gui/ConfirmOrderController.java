@@ -92,11 +92,47 @@ public class ConfirmOrderController extends Controller {
     private ObservableList<PaymentMethod> paymentMethodsObservableList = FXCollections.observableArrayList();
 
     @FXML
+    public void backAction(){
+        try{
+            FXMLLoader displayProductsLoader = new FXMLLoader(getClass().getResource("/display-products.fxml"));
+            Parent root = displayProductsLoader.load();
+
+            DisplayProductsController displayProductsController = displayProductsLoader.getController();
+            displayProductsController.set(services, stage);
+            displayProductsController.setEmployee(employee);
+
+            services.changeObserverForClient(employee, displayProductsController);
+
+            stage.setScene(new Scene(root));
+
+            stage.setOnCloseRequest(event -> {
+                displayProductsController.logoutAction();
+                stage.close();
+            });
+        }
+        catch(AppException | IOException ex){
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
     public void logoutAction() {
         try {
             services.logout(employee, null);
-            stage.close();
-        } catch (AppException ex) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+            Parent root = loader.load();
+
+            LoginController controller = loader.getController();
+            controller.set(services, stage);
+
+            Scene newScene = new Scene(root);
+            stage.setScene(newScene);
+
+            stage.setOnCloseRequest(event -> {
+                stage.close();
+            });
+        } catch (AppException | IOException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
             alert.showAndWait();
             System.out.println("Logout error " + ex.getMessage());
