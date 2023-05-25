@@ -27,7 +27,7 @@
                   <Font name="Verdana" size="14.0" />
                </font>
             </Label>
-            <Button layoutX="712.0" layoutY="36.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Log Out" textAlignment="CENTER" textFill="WHITE">
+            <Button layoutX="712.0" layoutY="36.0" mnemonicParsing="false" onAction="#logoutAction" style="-fx-background-color: transparent;" text="Log Out" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font name="Verdana" size="14.0" />
                </font>

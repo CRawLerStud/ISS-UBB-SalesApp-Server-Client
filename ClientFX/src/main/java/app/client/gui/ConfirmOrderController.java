@@ -92,6 +92,18 @@ public class ConfirmOrderController extends Controller {
     private ObservableList<PaymentMethod> paymentMethodsObservableList = FXCollections.observableArrayList();
 
     @FXML
+    public void logoutAction() {
+        try {
+            services.logout(employee, null);
+            stage.close();
+        } catch (AppException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage());
+            alert.showAndWait();
+            System.out.println("Logout error " + ex.getMessage());
+        }
+    }
+
+    @FXML
     public void confirmOrderAction(){
         try{
             String clientName = clientNameTextField.getText();

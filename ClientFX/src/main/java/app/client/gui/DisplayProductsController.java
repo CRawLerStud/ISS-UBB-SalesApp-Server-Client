@@ -146,6 +146,12 @@ public class DisplayProductsController extends Controller implements Initializab
         System.out.println("Delete Product Update has been called!");
         Platform.runLater(() -> {
             productsObservableList.remove(product);
+
+            for(OrderEntryForTableView entry : orderObservableList.stream().toList()){
+                if(entry.getProduct().equals(product)){
+                    orderObservableList.remove(entry);
+                }
+            }
         });
     }
 
@@ -156,6 +162,14 @@ public class DisplayProductsController extends Controller implements Initializab
             for(Product observableProduct : productsObservableList.stream().toList()){
                 if(observableProduct.equals(product)){
                     productsObservableList.set(productsObservableList.indexOf(observableProduct), product);
+                }
+            }
+
+            for(OrderEntryForTableView entry : orderObservableList.stream().toList()){
+                if (entry.getProduct().equals(product)) {
+                    orderObservableList.
+                            set(orderObservableList.indexOf(entry),
+                                    new OrderEntryForTableView(product, product.getName(), entry.getQuantity()));
                 }
             }
         });
