@@ -1,16 +1,31 @@
 package app.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Entity
+@Table(name = "employees")
+@DiscriminatorColumn(name = "type")
 public abstract class Employee {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     protected Long id;
+    @Column(name = "name")
     protected String name;
+    @Column(name = "surname")
     protected String surname;
+    @Column(name = "birthdate")
     protected LocalDate birthdate;
+    @Column(name = "username")
     protected String username;
+    @Column(name = "password")
     protected String password;
+
+    public Employee() {}
 
     public Employee(Long id, String name, String surname, LocalDate birthdate, String username, String password) {
         this.id = id;

@@ -10,7 +10,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.client.gui.DeleteProductsController">
    <children>
-      <TableView fx:id="productsTableView" layoutX="16.0" layoutY="121.0" prefHeight="406.0" prefWidth="767.0">
+      <TableView fx:id="productsTableView" layoutX="16.0" layoutY="121.0" prefHeight="388.0" prefWidth="767.0">
          <columns>
             <TableColumn fx:id="nameProductColumn" prefWidth="75.0" text="Name" />
             <TableColumn fx:id="stockProductColumn" prefWidth="75.0" text="Stock" />
@@ -39,6 +39,7 @@
             </Text>
          </children>
       </AnchorPane>
-      <Button layoutX="16.0" layoutY="548.0" mnemonicParsing="false" onAction="#deleteProductAction" prefHeight="26.0" prefWidth="767.0" text="Delete Product" />
+      <Button layoutX="16.0" layoutY="520.0" mnemonicParsing="false" onAction="#deleteProductAction" prefHeight="26.0" prefWidth="767.0" text="Delete Product" />
+      <Button layoutX="16.0" layoutY="559.0" mnemonicParsing="false" onAction="#backAction" prefHeight="26.0" prefWidth="767.0" text="Back" />
    </children>
 </AnchorPane>
