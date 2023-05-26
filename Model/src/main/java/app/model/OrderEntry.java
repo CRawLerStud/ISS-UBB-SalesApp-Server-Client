@@ -25,6 +25,14 @@ public class OrderEntry {
         this.quantity = quantity;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     public Product getProduct() {
         return product;
     }

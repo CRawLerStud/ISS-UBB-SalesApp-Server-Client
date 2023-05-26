@@ -24,7 +24,7 @@ public class Order {
     @ManyToOne(optional = false)
     @JoinColumn(name = "client_id")
     private Client client;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<OrderEntry> orderEntries;
 
     public Order() {

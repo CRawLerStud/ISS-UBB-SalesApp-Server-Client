@@ -1,6 +1,7 @@
 package app.persistance.hibernate;
 
 import app.model.Order;
+import app.model.OrderEntry;
 import app.model.Product;
 import app.persistance.OrderRepository;
 import app.persistance.utils.HibernateSession;
@@ -16,6 +17,11 @@ public class HibernateOrderRepository implements OrderRepository {
         try(Session session = HibernateSession.getInstance().openSession()){
             session.beginTransaction();
             Long ID = (Long) session.save(entity);
+            entity.setId(ID);
+            for(OrderEntry entry : entity.getOrderEntries()){
+                entry.setOrder(entity);
+                session.save(entry);
+            }
             session.getTransaction().commit();
             return ID;
         }
