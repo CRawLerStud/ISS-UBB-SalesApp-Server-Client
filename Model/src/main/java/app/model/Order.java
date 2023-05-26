@@ -1,16 +1,34 @@
 package app.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Entity
+@Table(name = "orders")
 public class Order {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+    @Column(name = "date")
     private LocalDateTime date;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "payment")
     private PaymentMethod payment;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "status")
     private OrderStatus status;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "client_id")
     private Client client;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderEntry> orderEntries;
+
+    public Order() {
+    }
 
     public Order(Long id, LocalDateTime date, PaymentMethod payment, OrderStatus status, Client client) {
         this.id = id;

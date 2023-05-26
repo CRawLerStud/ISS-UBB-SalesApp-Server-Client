@@ -1,13 +1,25 @@
 package app.model;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
+@Table(name = "products")
 public class Product {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "stock")
     private Integer stock;
+    @Column(name = "price")
     private Double price;
+
+    public Product() {}
 
     public Product(Long id, String name, Integer stock, Double price) {
         this.id = id;

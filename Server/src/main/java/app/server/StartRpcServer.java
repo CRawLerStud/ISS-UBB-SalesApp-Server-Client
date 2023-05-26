@@ -6,6 +6,7 @@ import app.persistance.ClientRepository;
 import app.persistance.EmployeeRepository;
 import app.persistance.OrderRepository;
 import app.persistance.ProductRepository;
+import app.persistance.hibernate.HibernateClientRepository;
 import app.persistance.hibernate.HibernateEmployeeRepository;
 import app.persistance.implementation.DefaultClientRepository;
 import app.persistance.implementation.DefaultEmployeeRepository;
@@ -38,7 +39,7 @@ public class StartRpcServer {
         ProductRepository productRepository = new DefaultProductRepository(properties);
         EmployeeRepository employeeRepository = new HibernateEmployeeRepository();
         OrderRepository orderRepository = new DefaultOrderRepository(properties);
-        ClientRepository clientRepository = new DefaultClientRepository(properties);
+        ClientRepository clientRepository = new HibernateClientRepository();
 
         AppServices services = new DefaultAppServer(productRepository, employeeRepository, orderRepository, clientRepository);
 

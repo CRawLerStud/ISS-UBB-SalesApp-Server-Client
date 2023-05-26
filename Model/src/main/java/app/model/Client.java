@@ -1,12 +1,24 @@
 package app.model;
 
+import jakarta.persistence.*;
+
+import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "clients")
 public class Client {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "address")
     private String address;
+
+    public Client() {}
 
     public Client(Long id, String name, String address) {
         this.id = id;

@@ -12,12 +12,16 @@
         <property name="connection.username">postgres</property>
         <property name="connection.password">postgres</property>
 
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.auto">create</property>
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>
 
         <mapping class="app.model.Employee"/>
         <mapping class="app.model.Salesman"/>
         <mapping class="app.model.Admin"/>
+        <mapping class="app.model.Client"/>
+        <mapping class="app.model.Order"/>
+        <mapping class="app.model.OrderEntry"/>
+        <mapping class="app.model.Product"/>
     </session-factory>
 </hibernate-configuration>
